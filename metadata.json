@@ -1,0 +1,6 @@
+{
+  "name": "Mandi Mitra AI 🌾",
+  "description": "Smart Agriculture AI Platform & Flutter App for Indian Farmers with Live Mandi Prices, Weather Advisory, Gemini AI Crop Assistant, Fertilizer & Profit Calculators, Schemes, Machinery, and Marketplace.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
