@@ -19,6 +19,12 @@ import 'screens/marketplace/marketplace_screen.dart';
 import 'screens/community/community_screen.dart';
 import 'screens/farm_diary/farm_diary_screen.dart';
 import 'screens/profile/profile_screen.dart';
+import 'screens/crop_doctor/crop_doctor_screen.dart';
+import 'screens/smart_advisor/mandi_advisor_screen.dart';
+import 'screens/knowledge_card/knowledge_card_screen.dart';
+import 'screens/loan_dashboard/loan_readiness_screen.dart';
+import 'screens/demo_mode/hackathon_demo_screen.dart';
+import 'screens/selling_decision/selling_decision_system_screen.dart';
 
 class MandiMitraApp extends StatelessWidget {
   const MandiMitraApp({super.key});
@@ -69,6 +75,12 @@ class _MainNavigationShellState extends State<MainNavigationShell> {
       const MarketplaceScreen(),
       const CommunityScreen(),
       const FarmDiaryScreen(),
+      const CropDoctorScreen(),
+      const MandiAdvisorScreen(),
+      const KnowledgeCardScreen(),
+      const LoanReadinessScreen(),
+      HackathonDemoScreen(onNavigate: _onSelectTab),
+      const SellingDecisionSystemScreen(),
     ];
 
     final titles = [
@@ -86,6 +98,12 @@ class _MainNavigationShellState extends State<MainNavigationShell> {
       isHindi ? 'फसल बाज़ार (Marketplace)' : 'Crop Marketplace',
       isHindi ? 'किसान चौपाल (Community)' : 'Kisan Community',
       isHindi ? 'कृषि दैनिकी (Farm Diary)' : 'Farm Diary',
+      isHindi ? 'एआई फसल डॉक्टर' : 'AI Crop Doctor',
+      isHindi ? 'मंडी विक्रय सलाहकार' : 'Mandi Selling Advisor',
+      isHindi ? 'किसान ज्ञान पत्र' : 'Farmer Knowledge Card',
+      isHindi ? 'बैंक ऋण तैयारी' : 'Loan Readiness Dashboard',
+      isHindi ? 'डेमो मोड (Hackathon Demo)' : 'Demonstration Mode',
+      isHindi ? 'स्मार्ट विक्रय निर्णय प्रणाली' : 'Smart Selling Decision System',
     ];
 
     final isWide = MediaQuery.of(context).size.width >= 800;
@@ -99,7 +117,13 @@ class _MainNavigationShellState extends State<MainNavigationShell> {
           padding: EdgeInsets.zero,
           children: [
             DrawerHeader(
-              decoration: const BoxDecoration(color: AppColors.primary),
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [Color(0xFF1E7E34), Color(0xFF155724)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.end,
@@ -111,21 +135,27 @@ class _MainNavigationShellState extends State<MainNavigationShell> {
                     style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   Text(
-                    state.userProfile.name,
-                    style: const TextStyle(color: Colors.white70, fontSize: 13),
+                    '${state.userProfile.name} • ${state.userProfile.district}',
+                    style: const TextStyle(color: Colors.white70, fontSize: 12),
                   ),
                 ],
               ),
             ),
             _drawerItem(Icons.home, AppStrings.get('home', lang), 0),
+            _drawerItem(Icons.analytics_outlined, isHindi ? 'स्मार्ट विक्रय निर्णय (नया)' : 'Selling Decision Support', 19, isNew: true),
+            _drawerItem(Icons.healing, isHindi ? 'एआई फसल डॉक्टर' : 'AI Crop Doctor', 14, isNew: true),
+            _drawerItem(Icons.compare_arrows, isHindi ? 'मंडी विक्रय सलाहकार' : 'Selling Advisor', 15),
+            _drawerItem(Icons.card_membership, isHindi ? 'किसान ज्ञान पत्र' : 'Knowledge Card', 16, isNew: true),
+            _drawerItem(Icons.play_circle_fill, isHindi ? 'हैकाथॉन डेमो मोड' : 'Hackathon Demo', 18, isHighlight: true),
+            const Divider(),
             _drawerItem(Icons.currency_rupee, AppStrings.get('mandi', lang), 1),
             _drawerItem(Icons.wb_sunny_outlined, AppStrings.get('weather', lang), 2),
             _drawerItem(Icons.auto_awesome, AppStrings.get('aiAssistant', lang), 3),
-            const Divider(),
             _drawerItem(Icons.biotech, isHindi ? 'खाद कैलकुलेटर' : 'Fertilizer Calc', 5),
             _drawerItem(Icons.landscape, isHindi ? 'मृदा स्वास्थ्य' : 'Soil Health', 6),
             _drawerItem(Icons.calendar_month, isHindi ? 'फसल कैलेंडर' : 'Crop Calendar', 7),
             _drawerItem(Icons.calculate, isHindi ? 'मुनाफा कैलकुलेटर' : 'Profit Calculator', 8),
+            _drawerItem(Icons.account_balance_wallet, isHindi ? 'बैंक ऋण तैयारी' : 'Loan Readiness', 17),
             _drawerItem(Icons.account_balance, isHindi ? 'सरकारी योजनाएं' : 'Govt Schemes', 9),
             _drawerItem(Icons.agriculture, isHindi ? 'यंत्र किराया' : 'Machinery Rental', 10),
             _drawerItem(Icons.storefront, isHindi ? 'फसल बाज़ार' : 'Crop Marketplace', 11),
@@ -174,16 +204,39 @@ class _MainNavigationShellState extends State<MainNavigationShell> {
     );
   }
 
-  Widget _drawerItem(IconData icon, String title, int index) {
+  Widget _drawerItem(IconData icon, String title, int index, {bool isNew = false, bool isHighlight = false}) {
     final isSelected = _currentIndex == index;
     return ListTile(
-      leading: Icon(icon, color: isSelected ? AppColors.primary : AppColors.textSecondary),
-      title: Text(
-        title,
-        style: TextStyle(
-          fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-          color: isSelected ? AppColors.primary : AppColors.textPrimary,
-        ),
+      leading: Icon(
+        icon,
+        color: isHighlight
+            ? AppColors.accent
+            : (isSelected ? AppColors.primary : AppColors.textSecondary),
+      ),
+      title: Row(
+        children: [
+          Expanded(
+            child: Text(
+              title,
+              style: TextStyle(
+                fontWeight: isSelected || isHighlight ? FontWeight.bold : FontWeight.normal,
+                color: isSelected ? AppColors.primary : AppColors.textPrimary,
+              ),
+            ),
+          ),
+          if (isNew)
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+              decoration: BoxDecoration(color: AppColors.primary, borderRadius: BorderRadius.circular(6)),
+              child: const Text('NEW', style: TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold)),
+            ),
+          if (isHighlight)
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+              decoration: BoxDecoration(color: AppColors.accent, borderRadius: BorderRadius.circular(6)),
+              child: const Text('DEMO', style: TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold)),
+            ),
+        ],
       ),
       selected: isSelected,
       onTap: () {
